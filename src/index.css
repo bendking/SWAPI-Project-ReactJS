@@ -7,7 +7,42 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.film-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.film {
+  margin-left: 0;
+  position: relative;
+  text-align: left;
+  background-color: #34eb86;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+  width: 550px;
+}
+
+.film p {
+  width: 80%;
+  margin: 0;
+}
+
+.fav-btn {
+  position: absolute;
+  top: 30%;
+  right: 25px;
+  vertical-align: middle;
+}
+
+@media only screen and (max-width: 900px) {
+  /* For mobile phones: */
+  .film {
+    width: 80%;
+  }
+
+  .fav-btn img {
+    height: 18px;
+    width: 18px;
+  }
 }
