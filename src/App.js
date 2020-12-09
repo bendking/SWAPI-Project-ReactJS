@@ -133,13 +133,15 @@ class Film extends React.Component {
 
   render() {
     const { isFavorite } = this.state;
+    const { episodeId, title, director, producer, releaseDate } = this.props;
 
     return (
-      <li key={this.props.episodeId} className="film">
-        <p><b>Title:</b> Episode {this.props.episodeId}: {this.props.title}</p>
-        <p><b>Director:</b> {this.props.director}</p>
-        <p><b>Producer:</b> {this.props.producer}</p>
-        <p><b>Release Date:</b> {this.props.releaseDate}</p>
+
+      <li key={episodeId} className="film">
+        <p><b>Title:</b> Episode {episodeId}: {title}</p>
+        <p><b>Director:</b> {director}</p>
+        <p><b>Producer:</b> {producer}</p>
+        <p><b>Release Date:</b> {releaseDate}</p>
         <button className="fav-btn" onClick={this.handleFavorite}>
           {isFavorite ? <img src={favorite_filled} /> : <img src={favorite_outlined} />}
         </button>
@@ -154,7 +156,6 @@ Film.propTypes = {
   director: PropTypes.string,
   producer: PropTypes.string,
   releaseDate: PropTypes.string,
-  isFavorite: PropTypes.bool
 }
 
 
