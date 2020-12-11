@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import favorite_filled from './icons/favorite-24px-filled.svg'
 import favorite_outlined from './icons/favorite-24px-outlined.svg'
@@ -17,29 +17,41 @@ function App() {
  * Fetches the API data and then passes it down
  * to it's child for rendering (FaCC).
  */
-function FetchFilms(props) {
-  const [error, setError] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [films, setFilms] = useState([]);
+class FetchFilms extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      error: null,
+      isLoaded: false,
+      films: []
+    };
+  }
 
-  // On mount
-  useEffect(() => {
+  // Seperate API calls to a different function
+  componentDidMount() {
     fetch("https://swapi.dev/api/films/")
       .then(res => res.json())
       .then(
         (result) => {
-          setIsLoaded(true);
-          setFilms(result.results)
+          this.setState({
+            isLoaded: true,
+            films: result.results
+          });
         },
         (error) => {
-          setIsLoaded(true);
-          setError(error);
+          this.setState({
+            isLoaded: true,
+            error
+          });
         }
       )
-  }, []);
+  }
 
   // Function as Child Component (FaCC)
-  return props.children({ error, isLoaded, films });
+  render() {
+    const { error, isLoaded, films } = this.state;
+    return this.props.children({ error, isLoaded, films });
+  }
 }
 
 FetchFilms.propTypes = {
@@ -86,7 +98,7 @@ function getFilmLocalStorage(episodeId) {
     fav = false;
   }
 
-  // Convert string to boolean
+  // Convert to boolean
   return fav == 'true';
 }
 
@@ -95,34 +107,47 @@ function getFilmLocalStorage(episodeId) {
  * and its 'Favorite' button according to local storage state
  * and user input
  */
-function Film(props) {
-  // Get the local storage state of this film
-  let fav = getFilmLocalStorage(props.episodeId);
-  const [isFavorite, setIsFavorite] = useState(fav);
+class Film extends React.Component {
+  constructor(props) {
+    super(props);
 
-  function handleFavorite() {
-    // Toggle isFavorite in local storage
-    localStorage.setItem(props.episodeId, !isFavorite)
+    // Get the local storage state of this film
+    let fav = getFilmLocalStorage(props.episodeId);
 
-    // Toggle isFavorite in state
-    setIsFavorite(isFavorite => !isFavorite);
+    this.state = {
+      isFavorite: fav,
+    };
+
+    this.handleFavorite = this.handleFavorite.bind(this);
   }
 
+  handleFavorite() {
+    // Toggle isFavorite in local storage
+    localStorage.setItem(this.props.episodeId, !this.state.isFavorite)
 
-  const { episodeId, title, director, producer, releaseDate } = props;
+    // Toggle isFavorite in state
+    this.setState(state => ({
+      isFavorite: !state.isFavorite
+    }));
+  }
 
-  return (
-    <li key={episodeId} className="film">
-      <p><b>Title:</b> Episode {episodeId}: {title}</p>
-      <p><b>Director:</b> {director}</p>
-      <p><b>Producer:</b> {producer}</p>
-      <p><b>Release Date:</b> {releaseDate}</p>
-      <button className="fav-btn" onClick={handleFavorite}>
-        {isFavorite ? <img src={favorite_filled} /> : <img src={favorite_outlined} />}
-      </button>
-    </li>
-  )
+  render() {
+    const { isFavorite } = this.state;
+    const { episodeId, title, director, producer, releaseDate } = this.props;
 
+    return (
+
+      <li key={episodeId} className="film">
+        <p><b>Title:</b> Episode {episodeId}: {title}</p>
+        <p><b>Director:</b> {director}</p>
+        <p><b>Producer:</b> {producer}</p>
+        <p><b>Release Date:</b> {releaseDate}</p>
+        <button className="fav-btn" onClick={this.handleFavorite}>
+          {isFavorite ? <img src={favorite_filled} /> : <img src={favorite_outlined} />}
+        </button>
+      </li>
+    )
+  }
 }
 
 Film.propTypes = {
